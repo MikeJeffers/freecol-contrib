@@ -4,4 +4,4 @@ jdk:
 
 env: TERM=dumb
 
-script: ant build
+script: ant testall
