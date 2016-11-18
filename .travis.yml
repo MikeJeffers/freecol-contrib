@@ -4,5 +4,9 @@ jdk:
 
 env: TERM=dumb
 
-script: ant build
-script: ant testall
+before_install:
+  - echo $(ant -version)
+
+script:
+  - ant build
+  - ant testall
