@@ -6,9 +6,6 @@ env: TERM=dumb
 
 before_install:
   - echo $(ant -version)
-  - sudo apt-get -qq update
-  - sudo apt-get install ant
 
 script:
-  - ant build
-  - ant testall
+  - ant prepare-commit
