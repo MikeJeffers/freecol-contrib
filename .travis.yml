@@ -8,4 +8,4 @@ before_install:
   - echo $(ant -version)
 
 script:
-  - ant prepare-commit
+  - ant build
