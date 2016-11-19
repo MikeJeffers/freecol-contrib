@@ -10,5 +10,3 @@ before_install:
 script:
   - ant clean
   - ant build
-  - ant compile-test
-  - ant -lib test/lib/junit.jar -Dtest=common.model.BuildingTest test
