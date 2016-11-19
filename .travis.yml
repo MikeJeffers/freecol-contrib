@@ -8,5 +8,7 @@ before_install:
   - echo $(ant -version)
 
 script:
-  - ant prepare-commit
-  - ant -lib test/lib/junit.jar testall
+  - ant clean
+  - ant build
+  - ant compile-test
+  - ant -lib test/lib/junit.jar -Dtest=common.model.BuildingTest test
