@@ -703,7 +703,8 @@ public class GUI extends FreeColClientHolder {
         StringTemplate template = StringTemplate.template("buy.text")
             .addStringTemplate("%nation%", settlement.getOwner().getNationLabel())
             .addStringTemplate("%goods%", goods.getLabel(true))
-            .addAmount("%gold%", gold);
+            .addAmount("%gold%", gold)
+            .addAmount("%euprice%", 99999);
 
         List<ChoiceItem<TradeBuyAction>> choices = new ArrayList<>();
         choices.add(new ChoiceItem<>(Messages.message("buy.takeOffer"),
