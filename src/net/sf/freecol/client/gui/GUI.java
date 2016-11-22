@@ -949,11 +949,15 @@ public class GUI extends FreeColClientHolder {
      */
     public TradeSellAction getSellChoice(Unit unit, Settlement settlement,
                                          Goods goods, int gold) {
+        //TODO: Basic EU price gather implementation!
+        //unit is the player's unit, therefore should get this players' eu market
+        int euroPrice = unit.getOwner().getMarket().getSalePrice(goods.getType(), goods.getAmount());
         StringTemplate goodsTemplate = goods.getLabel(true);
         StringTemplate template = StringTemplate.template("sell.text")
             .addStringTemplate("%nation%", settlement.getOwner().getNationLabel())
             .addStringTemplate("%goods%", goodsTemplate)
-            .addAmount("%gold%", gold);
+            .addAmount("%gold%", gold)
+            .addAmount("%euprice", euroPrice);
 
         List<ChoiceItem<TradeSellAction>> choices = new ArrayList<>();
         choices.add(new ChoiceItem<>(Messages.message("sell.takeOffer"),
