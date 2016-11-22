@@ -702,13 +702,14 @@ public class GUI extends FreeColClientHolder {
                                        Goods goods, int gold, boolean canBuy) {
     	//TODO: Basic EU price gather implementation!
     	//unit is the player's unit, therefore should get this players' eu market
-    	int euroPrice = unit.getOwner().getMarket().getCostToBuy(goods.getType());
+    	int euroPriceSingle = unit.getOwner().getMarket().getCostToBuy(goods.getType());
+        int euroPriceBundle = euroPriceSingle * goods.getAmount();
     	//TODO: by mike
         StringTemplate template = StringTemplate.template("buy.text")
             .addStringTemplate("%nation%", settlement.getOwner().getNationLabel())
             .addStringTemplate("%goods%", goods.getLabel(true))
             .addAmount("%gold%", gold)
-            .addAmount("%euprice%", euroPrice);
+            .addAmount("%euprice%", euroPriceBundle);
 
         List<ChoiceItem<TradeBuyAction>> choices = new ArrayList<>();
         choices.add(new ChoiceItem<>(Messages.message("buy.takeOffer"),
