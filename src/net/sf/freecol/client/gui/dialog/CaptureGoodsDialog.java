@@ -82,7 +82,7 @@ public final class CaptureGoodsDialog extends FreeColDialog<List<Goods>> {
 				total = lookup.getBidPrice(goods.getType(), goods.getAmount());
 				price = lookup.getCostToBuy(goods.getType());
 			}
-			return price + "(ea.)x" + goods.getAmount() + "= " + total;
+			return price + "(ea) total:"+ total;
 		}
 
 		// Override Object
