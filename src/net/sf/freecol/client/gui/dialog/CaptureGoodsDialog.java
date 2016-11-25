@@ -144,6 +144,25 @@ public final class CaptureGoodsDialog extends FreeColDialog<List<Goods>> {
         super(freeColClient, frame);
 
         this.maxCargo = winner.getSpaceLeft();
+        
+        GoodsItem[] goods = new GoodsItem[loot.size()];
+        for (int i = 0; i < loot.size(); i++) {
+            goods[i] = new GoodsItem(loot.get(i));
+        }
+        this.goodsList = new JList<>();
+        this.goodsList.setListData(goods);
+        this.goodsList.setCellRenderer(new CheckBoxRenderer());
+        this.goodsList.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent me) {
+                    JList<GoodsItem> gl = CaptureGoodsDialog.this.goodsList;
+                    int index = gl.locationToIndex(me.getPoint());
+                    if (index < 0) return;
+                    GoodsItem item = gl.getModel().getElementAt(index);
+                    if (item.isEnabled()) item.setSelected(!item.isSelected());
+                    updateComponents();
+                }
+            });
 
         this.allButton = Utility.localizedButton("all");
         this.allButton.addActionListener((ActionEvent ae) -> {
@@ -170,24 +189,7 @@ public final class CaptureGoodsDialog extends FreeColDialog<List<Goods>> {
         this.noneButton.setMnemonic('n');
         this.noneButton.setActionCommand(this.noneButton.getText());
 
-        GoodsItem[] goods = new GoodsItem[loot.size()];
-        for (int i = 0; i < loot.size(); i++) {
-            goods[i] = new GoodsItem(loot.get(i));
-        }
-        this.goodsList = new JList<>();
-        this.goodsList.setListData(goods);
-        this.goodsList.setCellRenderer(new CheckBoxRenderer());
-        this.goodsList.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent me) {
-                    JList<GoodsItem> gl = CaptureGoodsDialog.this.goodsList;
-                    int index = gl.locationToIndex(me.getPoint());
-                    if (index < 0) return;
-                    GoodsItem item = gl.getModel().getElementAt(index);
-                    if (item.isEnabled()) item.setSelected(!item.isSelected());
-                    updateComponents();
-                }
-            });
+       
 
         MigPanel panel = new MigPanel(new MigLayout("wrap 1", "[center]",
                                                     "[]20[]20[]"));
