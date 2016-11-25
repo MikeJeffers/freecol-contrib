@@ -41,97 +41,109 @@ import net.sf.freecol.client.gui.ChoiceItem;
 import net.sf.freecol.client.gui.panel.*;
 import net.sf.freecol.common.i18n.Messages;
 import net.sf.freecol.common.model.Goods;
+import net.sf.freecol.common.model.Market;
 import net.sf.freecol.common.model.Unit;
-
 
 /**
  * Panel for choosing the goods to capture.
  * <p>
  * Panel Layout:
- * <p style="display: block; font-family: monospace; white-space: pre; margin: 1em 0;">
- * | ----------------------------|
- * |   captureGoodsDialog.title  |
- * | ----------------------------|
- * |    allButton | noneButton   |
- * | ----------------------------|
- * |        [] goodsList         |
- * | ----------------------------|
- * |                    okButton |
- * | ----------------------------|
+ * <p style="display: block; font-family: monospace; white-space: pre; margin:
+ * 1em 0;">
+ * | ----------------------------| | captureGoodsDialog.title | |
+ * ----------------------------| | allButton | noneButton | |
+ * ----------------------------| | [] goodsList | |
+ * ----------------------------| | okButton | | ----------------------------|
  * <p>
- * Each member of goodsList is a {@code GoodsItem} as a
- *      checkbox and text combination, repeated as
- *      needed.
+ * Each member of goodsList is a {@code GoodsItem} as a checkbox and text
+ * combination, repeated as needed.
  */
 public final class CaptureGoodsDialog extends FreeColDialog<List<Goods>> {
 
-    private static final Logger logger = Logger.getLogger(CaptureGoodsDialog.class.getName());
+	private static final Logger logger = Logger.getLogger(CaptureGoodsDialog.class.getName());
 
+	private static class GoodsItem extends JCheckBox {
 
-    private static class GoodsItem extends JCheckBox {
+		private final Goods goods;
 
-        private final Goods goods;
+		public GoodsItem(Goods goods) {
+			this.goods = goods;
+		}
 
+		public Goods getGoods() {
+			return this.goods;
+		}
 
-        public GoodsItem(Goods goods) {
-            this.goods = goods;
-        }
+		// TODO: Mike implementation to get price on good
+		public String pricePerGood(Market lookup) {
+			int price = 0;
+			int total = 0;
+			if (lookup != null && goods != null) {
+				total = lookup.getBidPrice(goods.getType(), goods.getAmount());
+				price = lookup.getCostToBuy(goods.getType());
+			}
+			return price + "(ea.)x" + goods.getAmount() + "= " + total;
+		}
 
+		// Override Object
 
-        public Goods getGoods() {
-            return this.goods;
-        }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public String toString() {
+			return Messages.message(this.goods.getLabel());
+		}
+	}
 
+	private static class CheckBoxRenderer extends JCheckBox implements ListCellRenderer<GoodsItem> {
 
-        // Override Object
+		private Market market;
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String toString() {
-            return Messages.message(this.goods.getLabel());
-        }
-    }
+		public CheckBoxRenderer() {
+			// setBackground(UIManager.getColor("List.textBackground"));
+			// setForeground(UIManager.getColor("List.textForeground"));
+		}
 
-    private static class CheckBoxRenderer extends JCheckBox
-        implements ListCellRenderer<GoodsItem> {
+		/**
+		 * Overload constructor for market lookups on good pricing for display
+		 *
+		 * @param forPriceLookup - Market of current player
+		 */
+		public CheckBoxRenderer(Market forPriceLookup) {
+			this.market = forPriceLookup;
+		}
 
-        public CheckBoxRenderer() {
-            //setBackground(UIManager.getColor("List.textBackground"));
-            //setForeground(UIManager.getColor("List.textForeground"));
-        }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public Component getListCellRendererComponent(JList<? extends GoodsItem> list, GoodsItem value, int index,
+				boolean isSelected, boolean hasFocus) {
+			setSelected(value.isSelected());
+			if(market!=null){
+				setText(value.toString() + value.pricePerGood(market));
+			}else{
+				setText(value.toString());
+			}
+			setEnabled(value.isEnabled());
+			return this;
+		}
+	}
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Component getListCellRendererComponent(JList<? extends GoodsItem> list,
-                                                      GoodsItem value,
-                                                      int index,
-                                                      boolean isSelected,
-                                                      boolean hasFocus) {
-            setSelected(value.isSelected());
-            setText(value.toString());
-            setEnabled(value.isEnabled());
-            return this;
-        }
-    }
+	/** The maximum number of items to loot. */
+	private final int maxCargo;
 
-    /** The maximum number of items to loot. */
-    private final int maxCargo;
+	/** The button to select all items. */
+	private final JButton allButton;
 
-    /** The button to select all items. */
-    private final JButton allButton;
+	/** The button to select no items. */
+	private final JButton noneButton;
 
-    /** The button to select no items. */
-    private final JButton noneButton;
+	/** The list of goods to display. */
+	private final JList<GoodsItem> goodsList;
 
-    /** The list of goods to display. */
-    private final JList<GoodsItem> goodsList;
-
-
-    /**
+	/**
      * Creates a new CaptureGoodsDialog.
      *
      * @param freeColClient The {@code FreeColClient} for the game.
@@ -142,7 +154,6 @@ public final class CaptureGoodsDialog extends FreeColDialog<List<Goods>> {
     public CaptureGoodsDialog(FreeColClient freeColClient, JFrame frame,
             Unit winner, List<Goods> loot) {
         super(freeColClient, frame);
-
         this.maxCargo = winner.getSpaceLeft();
         
         GoodsItem[] goods = new GoodsItem[loot.size()];
@@ -151,7 +162,10 @@ public final class CaptureGoodsDialog extends FreeColDialog<List<Goods>> {
         }
         this.goodsList = new JList<>();
         this.goodsList.setListData(goods);
-        this.goodsList.setCellRenderer(new CheckBoxRenderer());
+        
+        //TODO: new checkbox param to provide player's market pricing for display!
+        this.goodsList.setCellRenderer(new CheckBoxRenderer(winner.getOwner().getMarket()));
+        
         this.goodsList.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent me) {
@@ -207,50 +221,52 @@ public final class CaptureGoodsDialog extends FreeColDialog<List<Goods>> {
             new ImageIcon(getImageLibrary().getUnitImage(winner)), c);
     }
 
+	/**
+	 * Update the components of the {@code goodsList}.
+	 */
+	private void updateComponents() {
+		int selectedCount = 0;
+		for (int i = 0; i < this.goodsList.getModel().getSize(); i++) {
+			GoodsItem gi = this.goodsList.getModel().getElementAt(i);
+			if (gi.isSelected())
+				selectedCount++;
+		}
 
-    /**
-     * Update the components of the {@code goodsList}.
-     */
-    private void updateComponents() {
-        int selectedCount = 0;
-        for (int i = 0; i < this.goodsList.getModel().getSize(); i++) {
-            GoodsItem gi = this.goodsList.getModel().getElementAt(i);
-            if (gi.isSelected()) selectedCount++;
-        }
+		if (selectedCount >= this.maxCargo) {
+			this.allButton.setEnabled(false);
+			for (int i = 0; i < this.goodsList.getModel().getSize(); i++) {
+				GoodsItem gi = this.goodsList.getModel().getElementAt(i);
+				if (!gi.isSelected())
+					gi.setEnabled(false);
+			}
+		} else {
+			this.allButton.setEnabled(true);
+			for (int i = 0; i < this.goodsList.getModel().getSize(); i++) {
+				GoodsItem gi = this.goodsList.getModel().getElementAt(i);
+				if (!gi.isSelected())
+					gi.setEnabled(true);
+			}
+		}
 
-        if (selectedCount >= this.maxCargo) {
-            this.allButton.setEnabled(false);
-            for (int i = 0; i < this.goodsList.getModel().getSize(); i++) {
-                GoodsItem gi = this.goodsList.getModel().getElementAt(i);
-                if (!gi.isSelected()) gi.setEnabled(false);
-            }
-        } else {
-            this.allButton.setEnabled(true);
-            for (int i = 0; i < this.goodsList.getModel().getSize(); i++) {
-                GoodsItem gi = this.goodsList.getModel().getElementAt(i);
-                if (!gi.isSelected()) gi.setEnabled(true);
-            }
-        }
+		goodsList.repaint();
+	}
 
-        goodsList.repaint();
-    }
+	// Implement FreeColDialog
 
-
-    // Implement FreeColDialog
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Goods> getResponse() {
-        Object value = getValue();
-        List<Goods> gl = new ArrayList<>();
-        if (options.get(0).equals(value)) {
-            for (int i = 0; i < this.goodsList.getModel().getSize(); i++) {
-                GoodsItem gi = this.goodsList.getModel().getElementAt(i);
-                if (gi.isSelected()) gl.add(gi.getGoods());
-            }
-        }
-        return gl;
-    }            
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<Goods> getResponse() {
+		Object value = getValue();
+		List<Goods> gl = new ArrayList<>();
+		if (options.get(0).equals(value)) {
+			for (int i = 0; i < this.goodsList.getModel().getSize(); i++) {
+				GoodsItem gi = this.goodsList.getModel().getElementAt(i);
+				if (gi.isSelected())
+					gl.add(gi.getGoods());
+			}
+		}
+		return gl;
+	}
 }

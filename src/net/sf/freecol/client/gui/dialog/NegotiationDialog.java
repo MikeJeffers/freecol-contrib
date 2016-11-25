@@ -64,6 +64,7 @@ import net.sf.freecol.common.model.GoodsContainer;
 import net.sf.freecol.common.model.GoodsLocation;
 import net.sf.freecol.common.model.GoodsTradeItem;
 import net.sf.freecol.common.model.InciteTradeItem;
+import net.sf.freecol.common.model.Market;
 import net.sf.freecol.common.model.NationSummary;
 import net.sf.freecol.common.model.Ownable;
 import net.sf.freecol.common.model.Player;
@@ -1094,8 +1095,16 @@ public final class NegotiationDialog extends FreeColDialog<DiplomaticTrade> {
      * @return A new {@code JButton} for the item.
      */
     private JButton getTradeItemButton(TradeItem item) {
+    	
+    	//TODO mike impl for display price on adding to negotiation offer
+    	Market market = getMyPlayer().getMarket();
+    	int priceEach = market.getCostToBuy(item.getGoods().getType());
+    	int priceTotal = market.getBidPrice(item.getGoods().getType(), item.getGoods().getAmount());
+    	String unlocalizedString = priceEach+"(ea.) "+priceTotal;
+    	//TODO: strings need localization via Messages module, should look into this.
+    	
         JButton button = new JButton(new RemoveAction(item));
-        button.setText(Messages.message(item.getLabel()));
+        button.setText(Messages.message(item.getLabel())+unlocalizedString);
         button.setMargin(Utility.EMPTY_MARGIN);
         button.setOpaque(false);
         button.setForeground(Utility.LINK_COLOR);
