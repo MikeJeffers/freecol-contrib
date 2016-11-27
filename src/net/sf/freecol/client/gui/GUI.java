@@ -956,7 +956,7 @@ public class GUI extends FreeColClientHolder {
             .addStringTemplate("%nation%", settlement.getOwner().getNationLabel())
             .addStringTemplate("%goods%", goodsTemplate)
             .addAmount("%gold%", gold)
-            .addAmount("%euprice", euroPrice);
+            .addAmount("%euprice%", euroPrice);
 
         List<ChoiceItem<TradeSellAction>> choices = new ArrayList<>();
         choices.add(new ChoiceItem<>(Messages.message("sell.takeOffer"),
