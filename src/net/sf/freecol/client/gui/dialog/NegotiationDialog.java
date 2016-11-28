@@ -1092,22 +1092,29 @@ public final class NegotiationDialog extends FreeColDialog<DiplomaticTrade> {
      * Gets a trade item button for a given item.
      *
      * @param item The {@code TradeItem} to make a button for.
+     * @param saleDir Boolean to indicate the EU price for sale (T) or buy (F)
      * @return A new {@code JButton} for the item.
      */
-    private JButton getTradeItemButton(TradeItem item) {
+    private JButton getTradeItemButton(TradeItem item, boolean saleDir) {
     	
-    	//TODO mike impl for display price on adding to negotiation offer
     	Market market = getMyPlayer().getMarket();
-    	int priceEach = market.getCostToBuy(item.getGoods().getType());
-    	int priceTotal = market.getBidPrice(item.getGoods().getType(), item.getGoods().getAmount());
-    	//TODO: strings need localization via Messages module, should look into this.
+    	int buyPriceTotal = market.getBidPrice(item.getGoods().getType(), item.getGoods().getAmount());
+    	int salePriceTotal = market.getSalePrice(item.getGoods().getType(), item.getGoods().getAmount());
     	
         JButton button = new JButton(new RemoveAction(item));
-        button.setText(Messages.message(item.getLabel()) + " " +
-        		Messages.message(StringTemplate
-                .template("negotiationDialog.euPrice")
-                .addAmount("%priceEach%", priceEach)
-                .addAmount("%priceTotal%", priceTotal)));
+        
+        // Depending on saleDir, creates a button for goods w/ EU buy or sale price
+        if (saleDir) {
+        	button.setText(Messages.message(item.getLabel()) + " " +
+        			Messages.message(StringTemplate
+        					.template("negotiationDialog.euSalePrice")
+        					.addAmount("%priceTotal%", salePriceTotal)));
+        } else {
+        	button.setText(Messages.message(item.getLabel()) + " " +
+        			Messages.message(StringTemplate
+        					.template("negotiationDialog.euBuyPrice")
+        					.addAmount("%priceTotal%", buyPriceTotal)));
+        }
         button.setMargin(Utility.EMPTY_MARGIN);
         button.setOpaque(false);
         button.setForeground(Utility.LINK_COLOR);
@@ -1130,7 +1137,7 @@ public final class NegotiationDialog extends FreeColDialog<DiplomaticTrade> {
         if (!offers.isEmpty()) {
             summary.add(Utility.localizedLabel(this.offer), "span");
             for (TradeItem item : offers) {
-                summary.add(getTradeItemButton(item), "skip");
+                summary.add(getTradeItemButton(item, true), "skip");
             }
         }
 
@@ -1142,7 +1149,7 @@ public final class NegotiationDialog extends FreeColDialog<DiplomaticTrade> {
                 summary.add(new JLabel(exchangeMessage), "newline 20, span");
             }
             for (TradeItem item : demands) {
-                summary.add(getTradeItemButton(item), "skip");
+                summary.add(getTradeItemButton(item, false), "skip");
             }
         }
     }
