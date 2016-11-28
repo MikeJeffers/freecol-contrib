@@ -1100,11 +1100,14 @@ public final class NegotiationDialog extends FreeColDialog<DiplomaticTrade> {
     	Market market = getMyPlayer().getMarket();
     	int priceEach = market.getCostToBuy(item.getGoods().getType());
     	int priceTotal = market.getBidPrice(item.getGoods().getType(), item.getGoods().getAmount());
-    	String unlocalizedString = "["+priceEach+"(ea) total:"+priceTotal+"]";
     	//TODO: strings need localization via Messages module, should look into this.
     	
         JButton button = new JButton(new RemoveAction(item));
-        button.setText(Messages.message(item.getLabel())+" "+unlocalizedString);
+        button.setText(Messages.message(item.getLabel()) + " " +
+        		Messages.message(StringTemplate
+                .template("negotiationDialog.euPrice")
+                .addAmount("%priceEach%", priceEach)
+                .addAmount("%priceTotal%", priceTotal)));
         button.setMargin(Utility.EMPTY_MARGIN);
         button.setOpaque(false);
         button.setForeground(Utility.LINK_COLOR);
