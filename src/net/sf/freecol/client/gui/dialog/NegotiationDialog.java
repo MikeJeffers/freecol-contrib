@@ -1098,23 +1098,31 @@ public final class NegotiationDialog extends FreeColDialog<DiplomaticTrade> {
     private JButton getTradeItemButton(TradeItem item, boolean saleDir) {
     	
     	Market market = getMyPlayer().getMarket();
-    	int buyPriceTotal = market.getBidPrice(item.getGoods().getType(), item.getGoods().getAmount());
-    	int salePriceTotal = market.getSalePrice(item.getGoods().getType(), item.getGoods().getAmount());
+    	JButton button = new JButton(new RemoveAction(item));
     	
-        JButton button = new JButton(new RemoveAction(item));
+    	// Checks if the item is gold or goods
+    	if (item.getGold() != 0) {
+    		button.setText(Messages.message(StringTemplate
+    				.template("negotiationDialog.goldTrade")
+    				.addAmount("%amount%", item.getGold())));
+    	} else {
+    		int buyPriceTotal = market.getBidPrice(item.getGoods().getType(), item.getGoods().getAmount());
+        	int salePriceTotal = market.getSalePrice(item.getGoods().getType(), item.getGoods().getAmount());
+    		
+        	// Depending on saleDir, creates a button for goods w/ EU buy or sale price
+        	if (saleDir) {
+            	button.setText(Messages.message(item.getLabel()) + " " +
+            			Messages.message(StringTemplate
+            					.template("negotiationDialog.euSalePrice")
+            					.addAmount("%priceTotal%", salePriceTotal)));
+            } else {
+            	button.setText(Messages.message(item.getLabel()) + " " +
+            			Messages.message(StringTemplate
+            					.template("negotiationDialog.euBuyPrice")
+            					.addAmount("%priceTotal%", buyPriceTotal)));
+            }
+    	}
         
-        // Depending on saleDir, creates a button for goods w/ EU buy or sale price
-        if (saleDir) {
-        	button.setText(Messages.message(item.getLabel()) + " " +
-        			Messages.message(StringTemplate
-        					.template("negotiationDialog.euSalePrice")
-        					.addAmount("%priceTotal%", salePriceTotal)));
-        } else {
-        	button.setText(Messages.message(item.getLabel()) + " " +
-        			Messages.message(StringTemplate
-        					.template("negotiationDialog.euBuyPrice")
-        					.addAmount("%priceTotal%", buyPriceTotal)));
-        }
         button.setMargin(Utility.EMPTY_MARGIN);
         button.setOpaque(false);
         button.setForeground(Utility.LINK_COLOR);
