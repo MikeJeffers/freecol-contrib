@@ -315,6 +315,11 @@ public final class DefaultTransferHandler extends TransferHandler {
     @Override
     public boolean importData(JComponent comp, Transferable t) {
         try {
+        	//TODO mike shit
+        	System.out.println("Receiving data from Draglistener...");
+        	System.out.println("comp = "+comp);
+        	System.out.println("Transferable: " +t);
+        	
             JLabel data;
 
             // This variable is used to temporarily keep the old
@@ -367,12 +372,16 @@ public final class DefaultTransferHandler extends TransferHandler {
             if (data.getParent() == comp) return false;
 
             if (data instanceof GoodsLabel) {
+            	//TODO mike printlns: remove me
+            	System.out.println("goods picked");
+            	
                 // Check if the goods can be dragged to comp.
                 GoodsLabel label = (GoodsLabel)data;
                 Goods goods = label.getGoods();
 
                 // Import the data.
                 if (label.isPartialChosen()) {
+                	System.out.println("partial amount");
                     int defaultAmount = goods.getAmount();
                     if (goods.getLocation() instanceof GoodsLocation) {
                         GoodsLocation loc = (GoodsLocation)goods.getLocation();
@@ -394,7 +403,12 @@ public final class DefaultTransferHandler extends TransferHandler {
                     if (amount <= 0) return false;
                     goods.setAmount(amount);
                 } else if (label.isFullChosen()) {
+                	//TODO mike printlns: remove me
+                	System.out.println("fullchosen!");
+                	System.out.println("goods is fullchosen: "+ label.getGoods().getIdType()+ " #"+label.getGoods().getAmount());
                 } else if (goods.getAmount() > GoodsContainer.CARGO_SIZE) {
+                	//TODO mike printlns: remove me
+                	System.out.println("some other bullshit");
                     goods.setAmount(GoodsContainer.CARGO_SIZE);
                 }
 
@@ -402,6 +416,8 @@ public final class DefaultTransferHandler extends TransferHandler {
                     return equipUnitIfPossible((UnitLabel)comp, goods);
 
                 } else if (comp instanceof DropTarget) {
+                	//TODO mike printlns: remove me
+                	System.out.println("target is droptarget");
                     DropTarget target = (DropTarget)comp;
                     if (!target.accepts(goods)) return false;
                     target.add(data, true);

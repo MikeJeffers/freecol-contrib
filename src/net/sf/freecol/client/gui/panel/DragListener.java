@@ -34,6 +34,7 @@ import net.sf.freecol.client.FreeColClient;
 import net.sf.freecol.client.gui.SwingGUI;
 import net.sf.freecol.client.gui.label.AbstractGoodsLabel;
 import net.sf.freecol.client.gui.label.UnitLabel;
+import net.sf.freecol.client.gui.panel.ColonyPanel.WarehousePanel;
 import net.sf.freecol.common.model.Unit;
 import net.sf.freecol.common.util.OSUtils;
 
@@ -139,15 +140,20 @@ public final class DragListener extends MouseAdapter {
         } else {
             if (comp instanceof AbstractGoodsLabel) {
                 AbstractGoodsLabel label = (AbstractGoodsLabel) comp;
-                
-                //TODO mike impl
+
+                //TODO mike experiments
                 if(e.isShiftDown() && e.isControlDown()){
                 	Component[] cArr = comp.getParent().getComponents();
                 	for(int i =0 ; i<cArr.length; i++){
                 		cArr[i].setForeground(Color.RED);
-                		System.out.println(cArr[i].getName());
+                		if(cArr[i] instanceof AbstractGoodsLabel){
+                			 AbstractGoodsLabel abGoods = (AbstractGoodsLabel) cArr[i];
+                			 System.out.println(abGoods.getAbstractGoods().getIdType()+" "+ abGoods.getAbstractGoods().getAmount());
+                		}
+                		
                 	}
                 	label.setFullChosen(true);
+                	System.out.println(label.getAbstractGoods().getType()+" is setFullChosen("+label.isFullChosen()+")");
                 	//TODO end mike impl
                 } else if (e.isShiftDown()) {
                     label.setPartialChosen(true);
@@ -170,6 +176,9 @@ public final class DragListener extends MouseAdapter {
             final TransferHandler handler = comp.getTransferHandler();
             if (handler != null) {
                 handler.exportAsDrag(comp, e, TransferHandler.COPY);
+                System.out.println(comp);
+                System.out.println(e);
+                System.out.println();
             }
         }
     }
