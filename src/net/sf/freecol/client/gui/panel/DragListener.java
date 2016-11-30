@@ -19,6 +19,8 @@
 
 package net.sf.freecol.client.gui.panel;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -137,7 +139,17 @@ public final class DragListener extends MouseAdapter {
         } else {
             if (comp instanceof AbstractGoodsLabel) {
                 AbstractGoodsLabel label = (AbstractGoodsLabel) comp;
-                if (e.isShiftDown()) {
+                
+                //TODO mike impl
+                if(e.isShiftDown() && e.isControlDown()){
+                	Component[] cArr = comp.getParent().getComponents();
+                	for(int i =0 ; i<cArr.length; i++){
+                		cArr[i].setForeground(Color.RED);
+                		System.out.println(cArr[i].getName());
+                	}
+                	label.setFullChosen(true);
+                	//TODO end mike impl
+                } else if (e.isShiftDown()) {
                     label.setPartialChosen(true);
                 } else if (e.isControlDown()) {
                     label.setFullChosen(true);
