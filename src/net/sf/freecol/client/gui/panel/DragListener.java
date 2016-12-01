@@ -141,7 +141,9 @@ public final class DragListener extends MouseAdapter {
                     label.setPartialChosen(true);
                 } else if (e.isControlDown()) {
                     label.setFullChosen(true);
-                } else {
+                } else if (e.isShiftDown() && e.isControlDown()) {
+                	label.setSuperFullChosen(true);
+            	}  else {
                     label.setPartialChosen(false);
                     label.setDefaultAmount();
                 }
