@@ -137,17 +137,13 @@ public final class DragListener extends MouseAdapter {
         } else {
             if (comp instanceof AbstractGoodsLabel) {
                 AbstractGoodsLabel label = (AbstractGoodsLabel) comp;
-                if (e.isShiftDown() && e.isControlDown()) {
-                	label.setSuperFullChosen(true);
+                if (e.isShiftDown()) {
+                    label.setPartialChosen(true);
+                } else if (e.isControlDown()) {
+                    label.setFullChosen(true);
                 } else {
-                	if (e.isShiftDown()) {
-                        label.setPartialChosen(true);
-                    } else if (e.isControlDown()) {
-                        label.setFullChosen(true);
-                    } else {
-                        label.setPartialChosen(false);
-                        label.setDefaultAmount();
-                    }
+                    label.setPartialChosen(false);
+                    label.setDefaultAmount();
                 }
             } else if (comp instanceof UnitLabel) {
                 final UnitLabel label = (UnitLabel) comp;

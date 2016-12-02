@@ -39,8 +39,6 @@ public class AbstractGoodsLabel extends FreeColLabel {
     private boolean partialChosen;
 
     private boolean fullChosen;
-    
-    private boolean superFullChosen;
 
 
     /**
@@ -93,24 +91,6 @@ public class AbstractGoodsLabel extends FreeColLabel {
      */
     public void setFullChosen(boolean fullChosen) {
         this.fullChosen = fullChosen;
-    }
-    
-    /**
-     * Has super full amount been selected?
-     *
-     * @return True if a super full amount has been selected.
-     */
-    public boolean isSuperFullChosen() {
-        return superFullChosen;
-    }
-    
-    /**
-     * Set the super full amount state.
-     *
-     * @param fullChosen The new super full amount state.
-     */
-    public void setSuperFullChosen(boolean superFullChosen) {
-        this.superFullChosen = superFullChosen;
     }
 
     /**
