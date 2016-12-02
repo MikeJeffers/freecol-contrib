@@ -314,11 +314,9 @@ public final class DefaultTransferHandler extends TransferHandler {
      */
     @Override
     public boolean importData(JComponent comp, Transferable t) {
+    	System.out.println("--!Import Data called!-- receiving Transferable: "+t);
+    	System.out.println("--Importing to target component: "+comp.getClass().getCanonicalName());
         try {
-        	//TODO mike shit
-        	System.out.println("Receiving data from Draglistener...");
-        	System.out.println("comp = "+comp);
-        	System.out.println("Transferable: " +t);
         	
             JLabel data;
 
@@ -372,16 +370,19 @@ public final class DefaultTransferHandler extends TransferHandler {
             if (data.getParent() == comp) return false;
 
             if (data instanceof GoodsLabel) {
-            	//TODO mike printlns: remove me
-            	System.out.println("goods picked");
+            	
             	
                 // Check if the goods can be dragged to comp.
                 GoodsLabel label = (GoodsLabel)data;
                 Goods goods = label.getGoods();
 
+                //TODO mike printlns: remove me
+            	System.out.println("imported data found to be GoodsLabel object");
+                System.out.println("Goods:"+goods.getType().getId()+" quantity:"+goods.getAmount());
+                
                 // Import the data.
                 if (label.isPartialChosen()) {
-                	System.out.println("partial amount");
+                	System.out.println("label.isPartialChosen()");
                     int defaultAmount = goods.getAmount();
                     if (goods.getLocation() instanceof GoodsLocation) {
                         GoodsLocation loc = (GoodsLocation)goods.getLocation();
@@ -404,11 +405,10 @@ public final class DefaultTransferHandler extends TransferHandler {
                     goods.setAmount(amount);
                 } else if (label.isFullChosen()) {
                 	//TODO mike printlns: remove me
-                	System.out.println("fullchosen!");
-                	System.out.println("goods is fullchosen: "+ label.getGoods().getIdType()+ " #"+label.getGoods().getAmount());
+                	System.out.println("label.isFullChosen()!");
                 } else if (goods.getAmount() > GoodsContainer.CARGO_SIZE) {
                 	//TODO mike printlns: remove me
-                	System.out.println("some other bullshit");
+                	System.out.println("Not isFullChosen! but found more goods than CARGOSIZE! (truncating dragged amount to CARGOSIZE)");
                     goods.setAmount(GoodsContainer.CARGO_SIZE);
                 }
 
@@ -417,12 +417,13 @@ public final class DefaultTransferHandler extends TransferHandler {
 
                 } else if (comp instanceof DropTarget) {
                 	//TODO mike printlns: remove me
-                	System.out.println("target is droptarget");
+                	System.out.println("Component is valid DropTarget!");
                     DropTarget target = (DropTarget)comp;
                     if (!target.accepts(goods)) return false;
                     target.add(data, true);
                     restoreSelection(oldSelectedUnit);
                     comp.revalidate();
+                    System.out.println("Component is valid DropTarget!");
                     return true;
 
                 } else if (comp instanceof JLabel) {
@@ -480,7 +481,9 @@ public final class DefaultTransferHandler extends TransferHandler {
             }
         } catch (Exception e) { // FIXME: Suggest a reconnect?
             logger.log(Level.WARNING, "Import data fail", e);
+            System.err.println("drag fail??");
         }
+        System.err.println("no condition true!?");
         return false;
     }
 
@@ -549,14 +552,23 @@ public final class DefaultTransferHandler extends TransferHandler {
      */
     @Override
     public void exportAsDrag(JComponent comp, InputEvent e, int action) {
+    	System.out.println("___EXPORTING NEW DRAG EVENT!___");
+    	System.out.println("export  component: "+comp.getClass().getCanonicalName());
+    	System.out.println("export inputEvent: "+e.paramString());
+    	System.out.println("action flag:"+action);
         int srcActions = getSourceActions(comp);
+        System.out.println("sourceAction:"+srcActions);
         int dragAction = srcActions & action;
+        System.out.println("srcActions & action:"+srcActions);
         if (!(e instanceof MouseEvent)) {
+        	System.out.println("inputevent is not mouseEvent!!!");
             dragAction = NONE;
         }
 
         if (dragAction != NONE) {
+        	System.out.println("dragAction != NONE!!!");
             if (recognizer == null) {
+            	System.out.println("recognizer == null!!!");
                 recognizer = new FreeColDragGestureRecognizer(new FreeColDragHandler());
             }
 
