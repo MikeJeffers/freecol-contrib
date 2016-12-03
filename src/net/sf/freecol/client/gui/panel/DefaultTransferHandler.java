@@ -386,14 +386,36 @@ public final class DefaultTransferHandler extends TransferHandler {
                 	if (goods.getLocation() instanceof GoodsLocation) {
                         GoodsLocation loc = (GoodsLocation)goods.getLocation();
                         System.out.println(loc.getClass().getCanonicalName());
-                        int amountAvailable = loc.getGoodsCount(goods.getType());
-                        
-                        System.out.println("Moving "+goods.getType()+ " quantity: "+ goods.getAmount() +"from "+loc.getClass().getCanonicalName());
-                        System.out.println("getGoodsCount "+amountAvailable);
+                        int amountToTransfer = loc.getGoodsCount(goods.getType());
+                        System.out.println("getGoodsCount "+amountToTransfer);
                         System.out.println("label.getAmount "+label.getAmount());
-                        if(amountAvailable==label.getAmount()){
+                        if(comp instanceof DropTarget){
+                        	DropTarget dt = (DropTarget) comp;
+                        	//t.suggested(goodsType)
+                        	if(dt instanceof CargoPanel){
+                        		System.out.println("Dragged to CARGO ON CARRIER!");
+                        		CargoPanel cp = (CargoPanel) dt;
+                        		Unit carrier = cp.getCarrier();
+                        		int spaceTaken = carrier.getCargoSpaceTaken();
+                        		int availableHolds = carrier.getCargoCapacity()-spaceTaken;
+                        		if(amountToTransfer>GoodsContainer.CARGO_SIZE*availableHolds){
+                        			amountToTransfer = GoodsContainer.CARGO_SIZE*availableHolds;
+                        			label.setAmount(amountToTransfer);
+                        			goods = label.getGoods();
+                        		}
+                        		
+                        		System.out.println("Carrier has space:"+availableHolds);
+                        		System.out.println("carrier has space occupied:"+ spaceTaken);
+                        	}else{
+                        		System.out.println("boy i sure do hope i am dragging to a colonypanel");
+                        	}
+                        }
+                        System.out.println("Moving "+goods.getType()+ " quantity: "+ goods.getAmount() +"from "+loc.getClass().getCanonicalName());
+                        
+                        if(amountToTransfer==label.getAmount()){
                         	System.out.println("Amount being dragged is correct!");
                         }
+                        
                 	}
                 	
                 }else if (label.isPartialChosen()) {

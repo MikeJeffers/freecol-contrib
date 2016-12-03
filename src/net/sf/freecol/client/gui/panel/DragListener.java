@@ -162,10 +162,13 @@ public final class DragListener extends MouseAdapter {
                 	System.out.println(label.getAbstractGoods().getType()+" is isSuperFullChosen("+label.isSuperFullChosen()+")");
                 	//TODO end mike impl
                 } else if (e.isShiftDown()) {
+                	label.setSuperFullChosen(false);
                     label.setPartialChosen(true);
                 } else if (e.isControlDown()) {
+                	label.setSuperFullChosen(false);
                     label.setFullChosen(true);
                 } else {
+                	label.setSuperFullChosen(false);
                     label.setPartialChosen(false);
                     label.setDefaultAmount();
                 }
