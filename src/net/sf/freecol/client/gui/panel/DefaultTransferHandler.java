@@ -383,6 +383,18 @@ public final class DefaultTransferHandler extends TransferHandler {
                 // Import the data.
                 if(label.isSuperFullChosen()){
                 	System.out.println("FOR FUCKS SAKE--superFullChoice");
+                	if (goods.getLocation() instanceof GoodsLocation) {
+                        GoodsLocation loc = (GoodsLocation)goods.getLocation();
+                        System.out.println(loc.getClass().getCanonicalName());
+                        int amountAvailable = loc.getGoodsCount(goods.getType());
+                        
+                        System.out.println("Moving "+goods.getType()+ " quantity: "+ goods.getAmount() +"from "+loc.getClass().getCanonicalName());
+                        System.out.println("getGoodsCount "+amountAvailable);
+                        System.out.println("label.getAmount "+label.getAmount());
+                        if(amountAvailable==label.getAmount()){
+                        	System.out.println("Amount being dragged is correct!");
+                        }
+                	}
                 	
                 }else if (label.isPartialChosen()) {
                 	System.out.println("label.isPartialChosen()");
