@@ -370,30 +370,19 @@ public final class DefaultTransferHandler extends TransferHandler {
             if (data.getParent() == comp) return false;
 
             if (data instanceof GoodsLabel) {
-            	
-            	
                 // Check if the goods can be dragged to comp.
                 GoodsLabel label = (GoodsLabel)data;
                 Goods goods = label.getGoods();
-
-                //TODO mike printlns: remove me
-            	System.out.println("imported data found to be GoodsLabel object");
-                System.out.println("Goods:"+goods.getType().getId()+" quantity:"+goods.getAmount());
                 
                 // Import the data.
                 if(label.isSuperFullChosen()){
                 	System.out.println("FOR FUCKS SAKE--superFullChoice");
                 	if (goods.getLocation() instanceof GoodsLocation) {
                         GoodsLocation loc = (GoodsLocation)goods.getLocation();
-                        System.out.println(loc.getClass().getCanonicalName());
                         int amountToTransfer = loc.getGoodsCount(goods.getType());
-                        System.out.println("getGoodsCount "+amountToTransfer);
-                        System.out.println("label.getAmount "+label.getAmount());
                         if(comp instanceof DropTarget){
                         	DropTarget dt = (DropTarget) comp;
-                        	//t.suggested(goodsType)
                         	if(dt instanceof CargoPanel){
-                        		System.out.println("Dragged to CARGO ON CARRIER!");
                         		CargoPanel cp = (CargoPanel) dt;
                         		Unit carrier = cp.getCarrier();
                         		int spaceTaken = carrier.getCargoSpaceTaken();
@@ -403,21 +392,9 @@ public final class DefaultTransferHandler extends TransferHandler {
                         			label.setAmount(amountToTransfer);
                         			goods = label.getGoods();
                         		}
-                        		
-                        		System.out.println("Carrier has space:"+availableHolds);
-                        		System.out.println("carrier has space occupied:"+ spaceTaken);
-                        	}else{
-                        		System.out.println("boy i sure do hope i am dragging to a colonypanel");
                         	}
                         }
-                        System.out.println("Moving "+goods.getType()+ " quantity: "+ goods.getAmount() +"from "+loc.getClass().getCanonicalName());
-                        
-                        if(amountToTransfer==label.getAmount()){
-                        	System.out.println("Amount being dragged is correct!");
-                        }
-                        
                 	}
-                	
                 }else if (label.isPartialChosen()) {
                 	System.out.println("label.isPartialChosen()");
                     int defaultAmount = goods.getAmount();
@@ -441,11 +418,7 @@ public final class DefaultTransferHandler extends TransferHandler {
                     if (amount <= 0) return false;
                     goods.setAmount(amount);
                 } else if (label.isFullChosen()) {
-                	//TODO mike printlns: remove me
-                	System.out.println("label.isFullChosen()!");
                 } else if (goods.getAmount() > GoodsContainer.CARGO_SIZE) {
-                	//TODO mike printlns: remove me
-                	System.out.println("Not isFullChosen! but found more goods than CARGOSIZE! (truncating dragged amount to CARGOSIZE)");
                     goods.setAmount(GoodsContainer.CARGO_SIZE);
                 }
 
@@ -453,14 +426,11 @@ public final class DefaultTransferHandler extends TransferHandler {
                     return equipUnitIfPossible((UnitLabel)comp, goods);
 
                 } else if (comp instanceof DropTarget) {
-                	//TODO mike printlns: remove me
-                	System.out.println("Component is valid DropTarget!");
                     DropTarget target = (DropTarget)comp;
                     if (!target.accepts(goods)) return false;
                     target.add(data, true);
                     restoreSelection(oldSelectedUnit);
                     comp.revalidate();
-                    System.out.println("Component is valid DropTarget!");
                     return true;
 
                 } else if (comp instanceof JLabel) {
@@ -589,23 +559,14 @@ public final class DefaultTransferHandler extends TransferHandler {
      */
     @Override
     public void exportAsDrag(JComponent comp, InputEvent e, int action) {
-    	System.out.println("___EXPORTING NEW DRAG EVENT!___");
-    	System.out.println("export  component: "+comp.getClass().getCanonicalName());
-    	System.out.println("export inputEvent: "+e.paramString());
-    	System.out.println("action flag:"+action);
         int srcActions = getSourceActions(comp);
-        System.out.println("sourceAction:"+srcActions);
         int dragAction = srcActions & action;
-        System.out.println("srcActions & action:"+srcActions);
         if (!(e instanceof MouseEvent)) {
-        	System.out.println("inputevent is not mouseEvent!!!");
             dragAction = NONE;
         }
 
         if (dragAction != NONE) {
-        	System.out.println("dragAction != NONE!!!");
             if (recognizer == null) {
-            	System.out.println("recognizer == null!!!");
                 recognizer = new FreeColDragGestureRecognizer(new FreeColDragHandler());
             }
 
