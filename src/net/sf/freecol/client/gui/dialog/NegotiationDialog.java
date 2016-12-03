@@ -1100,12 +1100,8 @@ public final class NegotiationDialog extends FreeColDialog<DiplomaticTrade> {
     	Market market = getMyPlayer().getMarket();
     	JButton button = new JButton(new RemoveAction(item));
     	
-    	// Checks if the item is gold or goods
-    	if (item.getGold() != 0) {
-    		button.setText(Messages.message(StringTemplate
-    				.template("negotiationDialog.goldTrade")
-    				.addAmount("%amount%", item.getGold())));
-    	} else {
+    	// Checks if the items are goods
+    	if (item.getGoods() != null) {
     		int buyPriceTotal = market.getBidPrice(item.getGoods().getType(), item.getGoods().getAmount());
         	int salePriceTotal = market.getSalePrice(item.getGoods().getType(), item.getGoods().getAmount());
     		
@@ -1121,6 +1117,9 @@ public final class NegotiationDialog extends FreeColDialog<DiplomaticTrade> {
             					.template("negotiationDialog.euBuyPrice")
             					.addAmount("%priceTotal%", buyPriceTotal)));
             }
+    	} else {
+    		// If not goods, follow protocol
+    		button.setText(Messages.message(item.getLabel()));
     	}
         
         button.setMargin(Utility.EMPTY_MARGIN);
