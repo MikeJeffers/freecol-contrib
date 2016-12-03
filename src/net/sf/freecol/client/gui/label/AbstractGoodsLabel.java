@@ -39,9 +39,13 @@ public class AbstractGoodsLabel extends FreeColLabel {
     private boolean partialChosen;
 
     private boolean fullChosen;
+    
+    //TODO
+    private boolean superFullChosen;
 
 
-    /**
+
+	/**
      * Initializes this JLabel with the given goods data.
      *
      * @param lib The {@code ImageLibrary} to use to display the label.
@@ -55,7 +59,17 @@ public class AbstractGoodsLabel extends FreeColLabel {
 
         setToolTipText(Messages.getName(abstractGoods));
     }
+    
+    //TODO
+    public boolean isSuperFullChosen() {
+		return superFullChosen;
+	}
 
+
+	public void setSuperFullChosen(boolean superFullChosen) {
+		this.superFullChosen = superFullChosen;
+	}
+	//TODO
 
     /**
      * Has a partial amount been selected?

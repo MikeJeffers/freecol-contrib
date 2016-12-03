@@ -140,20 +140,20 @@ public final class DragListener extends MouseAdapter {
         } else {
             if (comp instanceof AbstractGoodsLabel) {
                 AbstractGoodsLabel label = (AbstractGoodsLabel) comp;
-
+                
                 //TODO mike experiments
-                if(e.isShiftDown() && e.isControlDown()){
+                if(e.isShiftDown() && e.isAltDown()){
                 	Component[] cArr = comp.getParent().getComponents();
                 	for(int i =0 ; i<cArr.length; i++){
-                		cArr[i].setForeground(Color.RED);
+                		//cArr[i].setForeground(Color.RED);
                 		if(cArr[i] instanceof AbstractGoodsLabel){
                 			 AbstractGoodsLabel abGoods = (AbstractGoodsLabel) cArr[i];
                 			 System.out.println(abGoods.getAbstractGoods().getIdType()+" "+ abGoods.getAbstractGoods().getAmount());
                 		}
                 		
                 	}
-                	label.setFullChosen(true);
-                	System.out.println(label.getAbstractGoods().getType()+" is setFullChosen("+label.isFullChosen()+")");
+                	label.setSuperFullChosen(true);
+                	System.out.println(label.getAbstractGoods().getType()+" is isSuperFullChosen("+label.isSuperFullChosen()+")");
                 	//TODO end mike impl
                 } else if (e.isShiftDown()) {
                     label.setPartialChosen(true);

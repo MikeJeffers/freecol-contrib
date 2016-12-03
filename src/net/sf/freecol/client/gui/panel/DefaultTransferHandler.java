@@ -381,7 +381,10 @@ public final class DefaultTransferHandler extends TransferHandler {
                 System.out.println("Goods:"+goods.getType().getId()+" quantity:"+goods.getAmount());
                 
                 // Import the data.
-                if (label.isPartialChosen()) {
+                if(label.isSuperFullChosen()){
+                	System.out.println("FOR FUCKS SAKE--superFullChoice");
+                	
+                }else if (label.isPartialChosen()) {
                 	System.out.println("label.isPartialChosen()");
                     int defaultAmount = goods.getAmount();
                     if (goods.getLocation() instanceof GoodsLocation) {
