@@ -19,6 +19,8 @@
 
 package net.sf.freecol.client.gui.panel;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -32,133 +34,143 @@ import net.sf.freecol.client.FreeColClient;
 import net.sf.freecol.client.gui.SwingGUI;
 import net.sf.freecol.client.gui.label.AbstractGoodsLabel;
 import net.sf.freecol.client.gui.label.UnitLabel;
+import net.sf.freecol.client.gui.panel.ColonyPanel.WarehousePanel;
 import net.sf.freecol.common.model.Unit;
 import net.sf.freecol.common.util.OSUtils;
 
-
 /**
  * A DragListener should be attached to Swing components that have a
- * TransferHandler attached.  The DragListener will make sure that the
- * Swing component to which it is attached is draggable (moveable to
- * be precise).
+ * TransferHandler attached. The DragListener will make sure that the Swing
+ * component to which it is attached is draggable (moveable to be precise).
  */
 public final class DragListener extends MouseAdapter {
 
-    private static final Logger logger = Logger.getLogger(DragListener.class.getName());
+	private static final Logger logger = Logger.getLogger(DragListener.class.getName());
 
-    /**
-     * The maximum numbers of pixels of the user's screen height
-     *      before triggering the small flag
-     */
-    private static final int maxWindowHeight = 768;
+	/**
+	 * The maximum numbers of pixels of the user's screen height before
+	 * triggering the small flag
+	 */
+	private static final int maxWindowHeight = 768;
 
-    /**
-     * The user's screen height.
-     */
-    private static final int windowHeight = (int) Math.floor(Toolkit.getDefaultToolkit().getScreenSize().getHeight());
+	/**
+	 * The user's screen height.
+	 */
+	private static final int windowHeight = (int) Math.floor(Toolkit.getDefaultToolkit().getScreenSize().getHeight());
 
-    /**
-     * The user's operating system.
-     */
-    private static final String operatingSystem = OSUtils.getOperatingSystem();
+	/**
+	 * The user's operating system.
+	 */
+	private static final String operatingSystem = OSUtils.getOperatingSystem();
 
-    /**
-     * Whether the user's operating system is Microsoft Windows
-     */
-    private final boolean windows = operatingSystem.startsWith("Windows");
+	/**
+	 * Whether the user's operating system is Microsoft Windows
+	 */
+	private final boolean windows = operatingSystem.startsWith("Windows");
 
-    /**
-     * Whether the user's screen height is smaller than the maximum height allowed
-     */
-    private static final boolean small = windowHeight < maxWindowHeight;
+	/**
+	 * Whether the user's screen height is smaller than the maximum height
+	 * allowed
+	 */
+	private static final boolean small = windowHeight < maxWindowHeight;
 
-    private final FreeColPanel parentPanel;
+	private final FreeColPanel parentPanel;
 
-    private final FreeColClient freeColClient;
+	private final FreeColClient freeColClient;
 
+	/**
+	 * The constructor to use.
+	 *
+	 * @param freeColClient
+	 *            The {@code FreeColClient} for the game.
+	 * @param parentPanel
+	 *            The layered pane that contains the components to which a
+	 *            DragListener might be attached.
+	 */
+	public DragListener(FreeColClient freeColClient, FreeColPanel parentPanel) {
+		this.freeColClient = freeColClient;
+		this.parentPanel = parentPanel;
+	}
 
-    /**
-     * The constructor to use.
-     *
-     * @param freeColClient The {@code FreeColClient} for the game.
-     * @param parentPanel The layered pane that contains the
-     *     components to which a DragListener might be attached.
-     */
-    public DragListener(FreeColClient freeColClient,
-                        FreeColPanel parentPanel) {
-        this.freeColClient = freeColClient;
-        this.parentPanel = parentPanel;
-    }
+	/**
+	 * Gets called when the mouse was pressed on a Swing component that has this
+	 * object as a MouseListener.
+	 *
+	 * @param e
+	 *            The event that holds the information about the mouse click.
+	 */
+	@Override
+	public void mousePressed(MouseEvent e) {
+		JComponent comp = (JComponent) e.getSource();
+		// Does not work on some platforms:
+		// if (e.isPopupTrigger() && (comp instanceof UnitLabel)) {
 
+		if (e.getButton() == MouseEvent.BUTTON3 || e.isPopupTrigger()) {
+			if (!parentPanel.isEditable()) { // No panel when not editable
+				logger.warning("Button3 disabled on non-editable panel: " + parentPanel);
+				return;
+			}
+			final QuickActionMenu menu = new QuickActionMenu(freeColClient, parentPanel).addMenuItems(comp);
+			final int lastIdx = menu.getComponentCount() - 1;
+			if ((lastIdx >= 0) && (menu.getComponent(lastIdx) instanceof Separator))
+				menu.remove(lastIdx);
+			if (menu.getComponentCount() <= 0)
+				return;
 
-    /**
-     * Gets called when the mouse was pressed on a Swing component
-     * that has this object as a MouseListener.
-     *
-     * @param e The event that holds the information about the mouse click.
-     */
-    @Override
-    public void mousePressed(MouseEvent e) {
-        JComponent comp = (JComponent) e.getSource();
-        // Does not work on some platforms:
-        // if (e.isPopupTrigger() && (comp instanceof UnitLabel)) {
+			final SwingGUI gui = (SwingGUI) freeColClient.getGUI();
+			/*
+			 * FIXME: Cleanup implementation Work-arounds: This moves the popup
+			 * up when in full screen mode and when the screen size is too small
+			 * to fit. JRE on Windows is unable to display popup menus that
+			 * extend beyond the canvas. Targeted for users with smaller screens
+			 * such as netbooks.
+			 */
+			if ((gui.isWindowed() && windows) || (!gui.isWindowed() && small)) {
+				menu.show(gui.getCanvas(), menu.getLocation().x, 0);
+			} else {
+				menu.show(comp, e.getX(), e.getY());
+			}
 
-        if (e.getButton() == MouseEvent.BUTTON3 || e.isPopupTrigger()) {
-            if (!parentPanel.isEditable()) { // No panel when not editable
-                logger.warning("Button3 disabled on non-editable panel: "
-                        + parentPanel);
-                return;
-            }
-            final QuickActionMenu menu
-                    = new QuickActionMenu(freeColClient, parentPanel)
-                    .addMenuItems(comp);
-            final int lastIdx = menu.getComponentCount() - 1;
-            if ((lastIdx >= 0)
-                    && (menu.getComponent(lastIdx) instanceof Separator))
-                menu.remove(lastIdx);
-            if (menu.getComponentCount() <= 0) return;
+		} else {
+			if (comp instanceof AbstractGoodsLabel) {
+				AbstractGoodsLabel label = (AbstractGoodsLabel) comp;
 
-            final SwingGUI gui = (SwingGUI) freeColClient.getGUI();
-            /*
-            FIXME: Cleanup implementation
-            Work-arounds:
-            This moves the popup up when in full screen mode
-            and when the screen size is too small to fit. JRE
-            on Windows is unable to display popup menus that
-            extend beyond the canvas. Targeted for users with
-            smaller screens such as netbooks.
-            */
-            if ((gui.isWindowed() && windows) || (!gui.isWindowed() && small)) {
-                menu.show(gui.getCanvas(), menu.getLocation().x, 0);
-            } else {
-                menu.show(comp, e.getX(), e.getY());
-            }
+				if (e.isShiftDown() && e.isAltDown()) {
+					Component[] cArr = comp.getParent().getComponents();
+					int sum = 0;
+					for (int i = 0; i < cArr.length; i++) {
+						if (cArr[i] instanceof AbstractGoodsLabel) {
+							AbstractGoodsLabel abGoods = (AbstractGoodsLabel) cArr[i];
+							if (abGoods.getAbstractGoods().getType().equals(label.getAbstractGoods().getType())) {
+								sum += abGoods.getAmount();
+							}
+						}
+					}
+					label.setSuperFullChosen(true);
+					label.setAmount(sum);
+				} else if (e.isShiftDown()) {
+					label.setSuperFullChosen(false);
+					label.setPartialChosen(true);
+				} else if (e.isControlDown()) {
+					label.setSuperFullChosen(false);
+					label.setFullChosen(true);
+				} else {
+					label.setSuperFullChosen(false);
+					label.setPartialChosen(false);
+					label.setDefaultAmount();
+				}
+			} else if (comp instanceof UnitLabel) {
+				final UnitLabel label = (UnitLabel) comp;
+				final Unit u = label.getUnit();
+				if (u.isCarrier() && !u.isAtSea() && parentPanel instanceof PortPanel) {
+					((PortPanel) parentPanel).setSelectedUnitLabel(label);
+				}
+			}
 
-        } else {
-            if (comp instanceof AbstractGoodsLabel) {
-                AbstractGoodsLabel label = (AbstractGoodsLabel) comp;
-                if (e.isShiftDown()) {
-                    label.setPartialChosen(true);
-                } else if (e.isControlDown()) {
-                    label.setFullChosen(true);
-                } else {
-                    label.setPartialChosen(false);
-                    label.setDefaultAmount();
-                }
-            } else if (comp instanceof UnitLabel) {
-                final UnitLabel label = (UnitLabel) comp;
-                final Unit u = label.getUnit();
-                if (u.isCarrier()
-                        && !u.isAtSea()
-                        && parentPanel instanceof PortPanel) {
-                    ((PortPanel) parentPanel).setSelectedUnitLabel(label);
-                }
-            }
-
-            final TransferHandler handler = comp.getTransferHandler();
-            if (handler != null) {
-                handler.exportAsDrag(comp, e, TransferHandler.COPY);
-            }
-        }
-    }
+			final TransferHandler handler = comp.getTransferHandler();
+			if (handler != null) {
+				handler.exportAsDrag(comp, e, TransferHandler.COPY);
+			}
+		}
+	}
 }
