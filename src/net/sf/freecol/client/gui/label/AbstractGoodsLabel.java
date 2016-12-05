@@ -150,4 +150,5 @@ public class AbstractGoodsLabel extends FreeColLabel {
 	public void setDefaultAmount() {
 		// do nothing
 	}
+
 }
