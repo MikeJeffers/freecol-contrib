@@ -700,10 +700,8 @@ public class GUI extends FreeColClientHolder {
      */
     public TradeBuyAction getBuyChoice(Unit unit, Settlement settlement,
                                        Goods goods, int gold, boolean canBuy) {
-    	//TODO: Basic EU price gather implementation!
-    	//unit is the player's unit, therefore should get this players' eu market
+    	//Get Buy price on Europe Market for comparison
     	int euroPrice = unit.getOwner().getMarket().getBidPrice(goods.getType(), goods.getAmount());
-    	//TODO: by mike
         StringTemplate template = StringTemplate.template("buy.text")
             .addStringTemplate("%nation%", settlement.getOwner().getNationLabel())
             .addStringTemplate("%goods%", goods.getLabel(true))
@@ -948,8 +946,7 @@ public class GUI extends FreeColClientHolder {
      */
     public TradeSellAction getSellChoice(Unit unit, Settlement settlement,
                                          Goods goods, int gold) {
-        //TODO: Basic EU price gather implementation!
-        //unit is the player's unit, therefore should get this players' eu market
+        //Get Sale price on Europe Market for comparison
         int euroPrice = unit.getOwner().getMarket().getSalePrice(goods.getType(), goods.getAmount());
         StringTemplate goodsTemplate = goods.getLabel(true);
         StringTemplate template = StringTemplate.template("sell.text")
