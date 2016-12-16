@@ -92,7 +92,6 @@ public final class CaptureGoodsDialog extends FreeColDialog<List<Goods>> {
             }
             StringTemplate template = StringTemplate.template("captureGoodsDialog.totalvalue")
             .addAmount("%total%", total);
-            System.out.println(Messages.message(template));
             return Messages.message(template);
         }
 
