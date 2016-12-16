@@ -92,6 +92,7 @@ public final class CaptureGoodsDialog extends FreeColDialog<List<Goods>> {
             }
             StringTemplate template = StringTemplate.template("captureGoodsDialog.totalvalue")
             .addAmount("%total%", total);
+            System.out.println(Messages.message(template));
             return Messages.message(template);
         }
 
@@ -136,7 +137,7 @@ public final class CaptureGoodsDialog extends FreeColDialog<List<Goods>> {
                                                       boolean isSelected,
                                                       boolean hasFocus) {
             if(market!=null){
-                setText(value.toString() + value.pricePerGood(market));
+                setText(value.toString() +" "+ value.pricePerGood(market));
             }else{
                 setText(value.toString());
             }
@@ -205,8 +206,7 @@ public final class CaptureGoodsDialog extends FreeColDialog<List<Goods>> {
         this.noneButton.setMnemonic('n');
         this.noneButton.setActionCommand(this.noneButton.getText());
 
-
-        this.goodsList.setCellRenderer(new CheckBoxRenderer());
+        this.goodsList.setCellRenderer(new CheckBoxRenderer(winner.getOwner().getMarket()));
         this.goodsList.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent me) {
